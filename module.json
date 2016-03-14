@@ -6,6 +6,6 @@
   "author": "me@bearsh.org",
   "license": "GPL-3.0+",
   "dependencies": {
-    "bearsh-drivers": "*"
+    "bearsh-drivers": "git@github.com:bearsh/bearsh-drivers.git"
   }
 }
