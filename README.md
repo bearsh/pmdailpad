@@ -1,7 +1,9 @@
 # Poor Man's Dialpad
 
-Vcc 3.3V
-Voltage at Key
+
+Voltage at Key (in V, Vcc 3.3V)
+
+ |||
 -----|------|-----
 0.00 | 0.93 | 1.45
 0.30 | 1.09 | 1.54
@@ -9,6 +11,7 @@ Voltage at Key
 0.76 | 1.35 | 1.71
 
 
+### Schematic
 
 ```
                     Vcc --(100k)--+----- GPIO
