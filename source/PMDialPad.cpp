@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "pmdailpad/PMDialPad.h"
+#include "pmdialpad/PMDialPad.h"
 
 #define AIN_VALID_THRESHOLD   3
 #define DEBOUNCE_TIME_MS      20
