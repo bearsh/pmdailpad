@@ -1,0 +1,11 @@
+{
+  "name": "pmdailpad",
+  "version": "0.0.0",
+  "description": "Poor Man's Dialpad",
+  "keywords": [],
+  "author": "me@bearsh.org",
+  "license": "GPL-3.0+",
+  "dependencies": {
+    "bearsh-drivers": "*"
+  }
+}
