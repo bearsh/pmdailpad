@@ -95,7 +95,9 @@ PMDialPad::PMDialPad(PinName button, PinName scale) :
 		status(IDLE),
 		convert_run(0),
 		timeout_evt(mbed::util::FunctionPointer0<void>(this, &PMDialPad::timeout).bind()),
-		adc_evt(mbed::util::FunctionPointer0<void>(this, &PMDialPad::adcDone).bind())
+		adc_evt(mbed::util::FunctionPointer0<void>(this, &PMDialPad::adcDone).bind()),
+		pressed_cb(0),
+		released_cb(0)
 {
 	anaIn.config(ADC_CONFIG_RES_10bit, ADC_CONFIG_INPSEL_AnalogInputTwoThirdsPrescaling,
 			ADC_CONFIG_REFSEL_SupplyOneHalfPrescaling, ADC_CONFIG_EXTREFSEL_None);
@@ -143,7 +145,19 @@ void PMDialPad::adcDone() {
 					maxVal = keys[i]; maxIdx = static_cast<enum Key>(i); keys[i] = 0;
 				}
 			}
-			button = maxIdx;
+			// call appropriate callbacks if there was a change
+			if (button != maxIdx) {
+				if (released_cb) {
+					released_cb.call(button);
+				}
+				button = maxIdx;
+				if (button != KEY_NONE) {
+					if (pressed_cb) {
+						pressed_cb.call(button);
+					}
+				}
+			}
+			// decide what to do next
 			if (button == KEY_NONE) {
 				interruptMode();
 				status = IDLE;

@@ -37,6 +37,22 @@ public:
 
 	enum Key button;
 
+	void attachOnPressedCallback(void (*cb)(enum Key)) {
+		pressed_cb.attach(cb);
+	}
+	template<typename T>
+	void attachOnPressedCallback(T *object, void (T::*member)(enum Key)) {
+		pressed_cb.attach(object, member);
+	}
+
+	void attachOnReleasedCallback(void (*cb)(enum Key)) {
+		released_cb.attach(cb);
+	}
+	template<typename T>
+	void attachOnReleasedCallback(T *object, void (T::*member)(enum Key)) {
+		released_cb.attach(object, member);
+	}
+
 private:
 	bearsh::AnalogIn anaIn;
 	bearsh::InterruptInOut intIn;
@@ -49,6 +65,8 @@ private:
 	uint8_t keys[KEY_LIST_LEN];
 	minar::callback_t timeout_evt;
 	minar::callback_t adc_evt;
+	mbed::util::FunctionPointer1<void, enum Key> pressed_cb;
+	mbed::util::FunctionPointer1<void, enum Key> released_cb;
 
 	void timeout();
 	void buttonPress();
