@@ -53,6 +53,14 @@ public:
 		released_cb.attach(object, member);
 	}
 
+	void attachOnHoldCallback(void (*cb)(enum Key)) {
+		hold_cb.attach(cb);
+	}
+	template<typename T>
+		void attachOnHoldCallback(T *object, void (T::*member)(enum Key)) {
+		hold_cb.attach(object, member);
+	}
+
 private:
 	bearsh::AnalogIn anaIn;
 	bearsh::InterruptInOut intIn;
@@ -65,8 +73,11 @@ private:
 	uint8_t keys[KEY_LIST_LEN];
 	minar::callback_t timeout_evt;
 	minar::callback_t adc_evt;
+	minar::callback_t holdtime_evt;
+	minar::callback_handle_t holdtime_evt_handle;
 	mbed::util::FunctionPointer1<void, enum Key> pressed_cb;
 	mbed::util::FunctionPointer1<void, enum Key> released_cb;
+	mbed::util::FunctionPointer1<void, enum Key> hold_cb;
 
 	void timeout();
 	void buttonPress();
@@ -74,6 +85,7 @@ private:
 	void adcDone();
 	void measureMode();
 	void interruptMode();
+	void holdTimeout();
 };
 
 #endif /* PMDIALPAD_H_ */

@@ -18,8 +18,7 @@
 
 #include "pmdialpad/PMDialPad.h"
 
-#define AIN_VALID_THRESHOLD   3
-#define BUTTON_PRESS_LONG_US  (500 * 1000)
+#define BUTTON_HOLD_TIME_MS   500
 #define CB_TOLERANCE_MS       20
 #define DEBOUNCE_TIME_MS      50
 #define RECHECK_TIME_MS       200
@@ -96,8 +95,11 @@ PMDialPad::PMDialPad(PinName button, PinName scale) :
 		convert_run(0),
 		timeout_evt(mbed::util::FunctionPointer0<void>(this, &PMDialPad::timeout).bind()),
 		adc_evt(mbed::util::FunctionPointer0<void>(this, &PMDialPad::adcDone).bind()),
+		holdtime_evt(mbed::util::FunctionPointer0<void>(this, &PMDialPad::holdTimeout).bind()),
+		holdtime_evt_handle(0),
 		pressed_cb(0),
-		released_cb(0)
+		released_cb(0),
+		hold_cb(0)
 {
 	anaIn.config(ADC_CONFIG_RES_10bit, ADC_CONFIG_INPSEL_AnalogInputTwoThirdsPrescaling,
 			ADC_CONFIG_REFSEL_SupplyOneHalfPrescaling, ADC_CONFIG_EXTREFSEL_None);
@@ -155,6 +157,18 @@ void PMDialPad::adcDone() {
 					if (pressed_cb) {
 						pressed_cb.call(button);
 					}
+					// if hold_cb is set, start a timer
+					if (hold_cb) {
+						if (holdtime_evt_handle) {
+							minar::Scheduler::cancelCallback(holdtime_evt_handle);
+						}
+						holdtime_evt_handle = minar::Scheduler::postCallback(holdtime_evt).delay(minar::milliseconds(BUTTON_HOLD_TIME_MS)).getHandle();
+					}
+				} else {
+					// no button pressed, cancle callback if scheduled
+					if (holdtime_evt_handle) {
+						minar::Scheduler::cancelCallback(holdtime_evt_handle);
+					}
 				}
 			}
 			// decide what to do next
@@ -184,4 +198,13 @@ void PMDialPad::interruptMode() {
 //	intIn.input();
 	scaleOut.input();
 	intIn.enable_irq();
+}
+
+void PMDialPad::holdTimeout() {
+	if (button != KEY_NONE) {
+		if (hold_cb) {
+			hold_cb.call(button);
+		}
+	}
+	holdtime_evt_handle = 0;
 }
