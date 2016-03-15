@@ -32,7 +32,7 @@ public:
 		KEY_INVALID, KEY_NONE, KEY_LIST_LEN
 	};
 
-	PMDialPad(PinName taster, PinName scale);
+	PMDialPad(PinName button, PinName scale);
 	virtual ~PMDialPad();
 
 	enum Key button;

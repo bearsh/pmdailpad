@@ -87,10 +87,10 @@ static PMDialPad::Key keymap(uint16_t val) {
 	return PMDialPad::KEY_INVALID;
 }
 
-PMDialPad::PMDialPad(PinName taster, PinName scale) :
+PMDialPad::PMDialPad(PinName button, PinName scale) :
 		button(KEY_NONE),
-		anaIn(taster),
-		intIn(taster),
+		anaIn(button),
+		intIn(button),
 		scaleOut(scale),
 		to(),
 		status(IDLE),
