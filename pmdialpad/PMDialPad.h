@@ -41,13 +41,13 @@ private:
 	bearsh::AnalogIn anaIn;
 	bearsh::InterruptInOut intIn;
 	DigitalInOut scaleOut;
-	Timeout to;
 	enum {
 		IDLE, INTERRUPT, CONVERT, DEBOUNCE, PRESSED, RELEASED, MEASUREMENT
 	} status;
 	int convert_run;
 	int8_t key_values[SIMPLEKEYBOARD_NB_CONVERT_RUN];
 	uint8_t keys[KEY_LIST_LEN];
+	minar::callback_t timeout_evt;
 
 	void timeout();
 	void buttonPress();

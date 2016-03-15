@@ -19,10 +19,10 @@
 #include "pmdialpad/PMDialPad.h"
 
 #define AIN_VALID_THRESHOLD   3
-#define DEBOUNCE_TIME_MS      20
-#define DEBOUNCE_TIME_US      (DEBOUNCE_TIME_MS * 1000)
-#define RECHECK_TIME_US       (100 * 1000)
 #define BUTTON_PRESS_LONG_US  (500 * 1000)
+#define CB_TOLERANCE_MS       20
+#define DEBOUNCE_TIME_MS      50
+#define RECHECK_TIME_MS       200
 
 #define ARRAY_SIZE(x)         (sizeof(x)/sizeof(x[0]))
 
@@ -92,9 +92,9 @@ PMDialPad::PMDialPad(PinName button, PinName scale) :
 		anaIn(button),
 		intIn(button),
 		scaleOut(scale),
-		to(),
 		status(IDLE),
-		convert_run(0)
+		convert_run(0),
+		timeout_evt(mbed::util::FunctionPointer0<void>(this, &PMDialPad::timeout).bind())
 {
 	anaIn.config(ADC_CONFIG_RES_10bit, ADC_CONFIG_INPSEL_AnalogInputTwoThirdsPrescaling,
 			ADC_CONFIG_REFSEL_SupplyOneHalfPrescaling, ADC_CONFIG_EXTREFSEL_None);
@@ -144,11 +144,11 @@ void PMDialPad::adcDone() {
 				status = IDLE;
 			} else {
 				status = MEASUREMENT;
-				to.attach_us(this, &PMDialPad::timeout, RECHECK_TIME_US);
+				minar::Scheduler::postCallback(timeout_evt).tolerance(minar::milliseconds(CB_TOLERANCE_MS)).delay(minar::milliseconds(RECHECK_TIME_MS));
 			}
 		} else {
 			status = MEASUREMENT;
-			to.attach_us(this, &PMDialPad::timeout, DEBOUNCE_TIME_US);
+			minar::Scheduler::postCallback(timeout_evt).tolerance(minar::milliseconds(CB_TOLERANCE_MS)).delay(minar::milliseconds(DEBOUNCE_TIME_MS));
 		}
 	}
 }
