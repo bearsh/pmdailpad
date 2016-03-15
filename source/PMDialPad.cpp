@@ -94,11 +94,12 @@ PMDialPad::PMDialPad(PinName button, PinName scale) :
 		scaleOut(scale),
 		status(IDLE),
 		convert_run(0),
-		timeout_evt(mbed::util::FunctionPointer0<void>(this, &PMDialPad::timeout).bind())
+		timeout_evt(mbed::util::FunctionPointer0<void>(this, &PMDialPad::timeout).bind()),
+		adc_evt(mbed::util::FunctionPointer0<void>(this, &PMDialPad::adcDone).bind())
 {
 	anaIn.config(ADC_CONFIG_RES_10bit, ADC_CONFIG_INPSEL_AnalogInputTwoThirdsPrescaling,
 			ADC_CONFIG_REFSEL_SupplyOneHalfPrescaling, ADC_CONFIG_EXTREFSEL_None);
-	anaIn.interrupt(this, &PMDialPad::adcDone);
+	anaIn.interrupt(this, &PMDialPad::adcInterrupt);
 	anaIn.disable();
 	intIn.input();
 	intIn.fall(this, &PMDialPad::buttonPress);
@@ -122,6 +123,10 @@ void PMDialPad::buttonPress() {
 		convert_run = 0;
 		status = CONVERT;
 	}
+}
+
+void PMDialPad::adcInterrupt() {
+	minar::Scheduler::postCallback(adc_evt);
 }
 
 void PMDialPad::adcDone() {

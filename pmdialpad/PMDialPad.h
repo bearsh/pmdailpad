@@ -48,9 +48,11 @@ private:
 	int8_t key_values[SIMPLEKEYBOARD_NB_CONVERT_RUN];
 	uint8_t keys[KEY_LIST_LEN];
 	minar::callback_t timeout_evt;
+	minar::callback_t adc_evt;
 
 	void timeout();
 	void buttonPress();
+	void adcInterrupt();
 	void adcDone();
 	void measureMode();
 	void interruptMode();
