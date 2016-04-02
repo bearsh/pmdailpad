@@ -64,7 +64,6 @@ static const struct range ranges[PMDialPad::KEY_LIST_LEN] = {
 	{PMDialPad::KEY_NONE, ADC_KEY_9+10, 255},
 };
 
-
 static PMDialPad::Key keymap(uint16_t val) {
 	int i = ARRAY_SIZE(ranges) / 2;
 
@@ -150,7 +149,7 @@ void PMDialPad::adcDone() {
 			}
 			// call appropriate callbacks if there was a change
 			if (button != maxIdx) {
-				if (released_cb) {
+				if (released_cb && button < KEY_INVALID) {
 					released_cb.call(button);
 				}
 				button = maxIdx;
