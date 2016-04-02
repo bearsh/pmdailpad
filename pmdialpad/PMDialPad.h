@@ -36,6 +36,7 @@ public:
 	virtual ~PMDialPad();
 
 	enum Key button;
+	int holdTime;
 
 	void attachOnPressedCallback(void (*cb)(enum Key)) {
 		pressed_cb.attach(cb);

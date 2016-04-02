@@ -18,7 +18,7 @@
 
 #include "pmdialpad/PMDialPad.h"
 
-#define BUTTON_HOLD_TIME_MS   500
+#define BUTTON_HOLD_TIME_MS   1000
 #define CB_TOLERANCE_MS       20
 #define DEBOUNCE_TIME_MS      50
 #define RECHECK_TIME_MS       200
@@ -88,6 +88,7 @@ static PMDialPad::Key keymap(uint16_t val) {
 
 PMDialPad::PMDialPad(PinName button, PinName scale) :
 		button(KEY_NONE),
+		holdTime(BUTTON_HOLD_TIME_MS),
 		anaIn(button),
 		intIn(button),
 		scaleOut(scale),
@@ -162,7 +163,7 @@ void PMDialPad::adcDone() {
 						if (holdtime_evt_handle) {
 							minar::Scheduler::cancelCallback(holdtime_evt_handle);
 						}
-						holdtime_evt_handle = minar::Scheduler::postCallback(holdtime_evt).delay(minar::milliseconds(BUTTON_HOLD_TIME_MS)).getHandle();
+						holdtime_evt_handle = minar::Scheduler::postCallback(holdtime_evt).delay(minar::milliseconds(holdTime)).getHandle();
 					}
 				} else {
 					// no button pressed, cancle callback if scheduled
