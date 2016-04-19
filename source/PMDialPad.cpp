@@ -25,6 +25,7 @@
 
 #define ARRAY_SIZE(x)         (sizeof(x)/sizeof(x[0]))
 
+#define cancelCallbackSave(h) do { if (h) { minar::Scheduler::cancelCallback(h); h = 0; } } while (0)
 
 struct range {
 	PMDialPad::Key key;
@@ -159,16 +160,12 @@ void PMDialPad::adcDone() {
 					}
 					// if hold_cb is set, start a timer
 					if (hold_cb) {
-						if (holdtime_evt_handle) {
-							minar::Scheduler::cancelCallback(holdtime_evt_handle);
-						}
+						cancelCallbackSave(holdtime_evt_handle);
 						holdtime_evt_handle = minar::Scheduler::postCallback(holdtime_evt).delay(minar::milliseconds(holdTime)).getHandle();
 					}
 				} else {
 					// no button pressed, cancle callback if scheduled
-					if (holdtime_evt_handle) {
-						minar::Scheduler::cancelCallback(holdtime_evt_handle);
-					}
+					cancelCallbackSave(holdtime_evt_handle);
 				}
 			}
 			// decide what to do next
